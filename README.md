@@ -10,6 +10,10 @@ FastAPIの学習用リポジトリ
 
 ### 開発環境
 
+岸川の開発環境は以下
+
 - WSL2
-- Docker
+- Docker version 24.0.7
+- Docker Compose version v2.23.3-desktop.2
+- Python 3.11
 - Visual Studio Code
