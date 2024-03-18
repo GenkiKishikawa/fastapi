@@ -17,3 +17,4 @@ FastAPIの学習用リポジトリ
 - Docker Compose version v2.23.3-desktop.2
 - Python 3.11
 - Visual Studio Code
+- Devcontainer
