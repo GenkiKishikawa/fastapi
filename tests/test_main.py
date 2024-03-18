@@ -52,6 +52,11 @@ async def test_create_and_read(async_client):
 
 
 @pytest.mark.asyncio
+async def test_due_date(async_client):
+	response = await async_client.post("/tasks", json={"title": "テストタスク", "due_data": "2024-12-01"})
+	assert response.status_code == starlette.status.HTTP_200_OK
+
+@pytest.mark.asyncio
 async def test_done_flag(async_client):
 	response = await async_client.post("/tasks", json={"title": "テストタスク2"})
 	assert response.status_code == starlette.status.HTTP_200_OK
