@@ -18,3 +18,7 @@ FastAPIの学習用リポジトリ
 - Python 3.11
 - Visual Studio Code
 - Devcontainer
+
+### 学習メモ
+
+- [学習メモ](https://gitlab2.vic.co.jp/learning-tsukuba/fastapi/kishikawa/-/issues/2)
