@@ -1,5 +1,5 @@
 import pytest
-import pytest_asincio
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -13,7 +13,7 @@ import starlette.status
 ASYNC_DB_URL = "sqlite+aiosqlite:///:memory:"
 
 
-@pytest_asyncio.async_fixture
+@pytest_asyncio.fixture
 async def async_client() -> AsyncClient:
 	async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
 	async_session = sessionmaker(
@@ -44,7 +44,7 @@ async def test_create_and_read(async_client):
 	assert response_obj["title"] == "テストタスク"
 
 	response = await async_client.get("/tasks")
-	assert resoinse.status_code == starlette.status.HTTP_200_OK
+	assert response.status_code == starlette.status.HTTP_200_OK
 	response_obj = response.json()
 	assert len(response_obj) == 1
 	assert response_obj[0]["title"] == "テストタスク"
@@ -72,4 +72,4 @@ async def test_done_flag(async_client):
 
 	# 既に完了フラグが外れているので400を返却
 	response = await async_client.delete("/tasks/1/done")
-	assert response.status_code == starlette.status.HTTP_400_NOT_FOUND
+	assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
