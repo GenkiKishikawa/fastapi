@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import api.schemas.task as task_schema
 
 import api.cruds.task as task_crud
-from api.db import get_db
+from api.core.db import get_db
 
 
 router = APIRouter()

@@ -2,24 +2,34 @@ version: '3'
 services:
   demo-app:
     build: .
+    depends_on:
+      - db
     volumes:
       - .dockervenv:/src/.venv
       - .:/src
     ports:
       - 8000:8000
+    env_file:
+      - .env
     environment:
-      - WATCHFILES_FORCE_POLLING=true
+      POSTGRES_SERVER: db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?Variable not set}
+      POSTGRES_USER: ${POSTGRES_USER?Variable not set}
+      POSTGRES_DB: ${POSTGRES_DB?Variable not set}
+      POSTGRES_PORT: ${POSTGRES_PORT?Variable not set}
+      WATCHFILES_FORCE_POLLING: true
+
   db:
-    image: mysql:8.0
-    platform: linux/x86_64
+    image: postgres:15
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # rootアカウントをパスワードなしで作成
-      MYSQL_DATABASE: 'demo' # 初期データベースとしてdemoを設定
-      TZ: 'Asia/Tokyo' # タイムゾーンを日本時間に設定
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?Variable not set}
+      POSTGRES_USER: ${POSTGRES_USER?Variable not set}
+      POSTGRES_DB: ${POSTGRES_DB?Variable not set}
+      TZ: 'Asia/Tokyo'
     volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - 33306:3306 # ホストマシンのポート33306を、docker内のポート3306に接続する
+      - 5432:5432
 volumes:
-  mysql_data:
+  postgres_data:
