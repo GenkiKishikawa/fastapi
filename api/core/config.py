@@ -9,12 +9,12 @@ class Settings(BaseSettings):
 	model_config = SettingsConfigDict(
 		env_file=".env", env_ignore_empty=True, extra="ignore"
 	)
- 
+
 	POSTGRES_SERVER: str
 	POSTGRES_PORT: int = 5432
 	POSTGRES_USER: str
 	POSTGRES_PASSWORD: str
-	POSTGRES_DB: str = "demo"
+	POSTGRES_DB: str
 	
 	@property
 	def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 			port=self.POSTGRES_PORT,
 			path=self.POSTGRES_DB
 		)
-  
+
 	@property
 	def ASYNC_SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
 		return MultiHostUrl.build(
