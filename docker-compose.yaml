@@ -7,6 +7,8 @@ services:
       - .:/src
     ports:
       - 8000:8000
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
   db:
     image: mysql:8.0
     platform: linux/x86_64
