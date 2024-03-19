@@ -5,6 +5,10 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /src
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	postgresql-client \
+	&& rm -rf /var/lib/apt/lists/*
+
 RUN pip install poetry
 
 COPY pyproject.toml* poetry.lock* ./
