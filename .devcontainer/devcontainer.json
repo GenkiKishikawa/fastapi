@@ -2,5 +2,18 @@
 	"name": "demo-app",
 	"dockerComposeFile": "../docker-compose.yaml",
 	"service": "demo-app",
-	"workspaceFolder": "/src/"
+	"workspaceFolder": "/src/",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"ms-python.vscode-pylance",
+				"ms-python.python",
+				"ms-python.debugpy",
+				"oderwat.indent-rainbow",
+				"KevinRose.vsc-python-indent"
+			]
+		}
+	}
 }
