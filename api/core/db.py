@@ -1,3 +1,5 @@
+from collections.abc import Generator, AsyncGenerator
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
@@ -37,7 +39,7 @@ except Exception as e:
 Base = declarative_base()
 
 
-def get__db():
+def get__db() -> Generator[Session, None, None]:
 	db = session()
 	try:
 		yield db	
@@ -47,11 +49,11 @@ def get__db():
 		db.close()
 
 
-async def get_async_db():
+async def get_async_db() -> AsyncGenerator[AsyncSession, None, None]:
 	async with async_session() as db:
 		try:
 			yield db
 		except Exception:
-			db.rollback()
+			await db.rollback()
 		finally:
-			db.close()
+			await db.close()
