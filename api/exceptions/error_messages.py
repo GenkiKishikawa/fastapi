@@ -22,3 +22,6 @@ class ErrorMessage:
         
     class NOT_FOUND(BaseMessage):
         text = "{}が見つかりません。"
+        
+    class ALREADY_EXISTS(BaseMessage):
+        text = "{}は既に存在します。"
