@@ -4,7 +4,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from api.core.db import get_db, Base
+from api.core.db import get_async_db, Base
 from api.main import app
 
 import starlette.status
@@ -30,7 +30,7 @@ async def async_client() -> AsyncClient:
 		async with async_session() as session:
 			yield session
 
-	app.dependency_overrides[get_db] = get_test_db
+	app.dependency_overrides[get_async_db] = get_test_db
 
 	async with AsyncClient(app=app, base_url="http://test") as client:
 		yield client
