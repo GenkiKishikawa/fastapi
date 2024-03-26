@@ -1,17 +1,19 @@
 import pytest
 import pytest_asyncio
 import starlette.status
-
-from tests.test_main import async_client
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio
-async def test_create_and_read(async_client):
+async def test_create(async_client):
 	response = await async_client.post("/tasks", json={"title": "テストタスク"})
 	assert response.status_code == starlette.status.HTTP_200_OK
 	response_obj = response.json()
 	assert response_obj["title"] == "テストタスク"
 
+
+@pytest.mark.asyncio
+async def test_read(async_client, set_task: None):
 	response = await async_client.get("/tasks")
 	assert response.status_code == starlette.status.HTTP_200_OK
 	response_obj = response.json()
@@ -21,8 +23,56 @@ async def test_create_and_read(async_client):
 
 
 @pytest.mark.asyncio
+async def test_update(async_client, set_task: None):
+    # タスクの更新
+    response = await async_client.put("/tasks/1", json={"title": "更新タスク"})
+    assert response.status_code == starlette.status.HTTP_200_OK
+    response_obj = response.json()
+    assert response_obj["title"] == "更新タスク"
+
+
+@pytest.mark.asyncio
+async def test_delete_task(async_client, set_task: None):
+	# タスクの削除
+	response = await async_client.delete("/tasks/1")
+	assert response.status_code == starlette.status.HTTP_200_OK
+
+
+@pytest.mark.asyncio
+async def test_update_none_task(async_client):
+    # 存在しないタスクの更新
+    response = await async_client.put("/tasks/1", json={"title": "更新タスク"})
+    assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
+	
+
+@pytest.mark.asyncio
+async def test_delete_none_task(async_client):
+	# 存在しないタスクの削除
+	response = await async_client.delete("/tasks/1")
+	assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
-	"input_param, expectation",
+    "input_title, expectation",
+    [
+		("テストタスク", starlette.status.HTTP_200_OK),
+		(1, starlette.status.HTTP_422_UNPROCESSABLE_ENTITY),
+		(["テストタスク", "テストラスク"], starlette.status.HTTP_422_UNPROCESSABLE_ENTITY),
+		({"title": "テストタスク"}, starlette.status.HTTP_422_UNPROCESSABLE_ENTITY),
+	]
+)
+async def test_title_type(async_client, input_title, expectation):
+    response = await async_client.post("/tasks", json={"title": input_title})
+    assert response.status_code == expectation
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+	[
+		"input_due_date",
+        "expectation"
+    ],
 	[
 		("2024-12-01", starlette.status.HTTP_200_OK),
 		("2024-12-32", starlette.status.HTTP_422_UNPROCESSABLE_ENTITY),
@@ -30,40 +80,6 @@ async def test_create_and_read(async_client):
 		("2024-1201", starlette.status.HTTP_422_UNPROCESSABLE_ENTITY),
 	],
 )
-async def test_due_date(input_param, expectation, async_client):
-	response = await async_client.post("/tasks", json={"title": "テストタスク", "due_date": input_param})
+async def test_due_date_type(async_client, input_due_date, expectation, set_task: None):
+	response = await async_client.post("/tasks", json={"due_date": input_due_date})
 	assert response.status_code == expectation
-
-
-@pytest.mark.asyncio
-async def test_update_task(async_client):
-    response = await async_client.post("/tasks", json={"title": "テストタスク3"})
-    assert response.status_code == starlette.status.HTTP_200_OK
-    response_obj = response.json()
-    assert response_obj["title"] == "テストタスク3"
-    
-    # タスクの更新
-    response = await async_client.put("/tasks/1", json={"title": "更新タスク"})
-    assert response.status_code == starlette.status.HTTP_200_OK
-    response_obj = response.json()
-    assert response_obj["title"] == "更新タスク"
-    
-    # 存在しないタスクの更新
-    response = await async_client.put("/tasks/2", json={"title": "更新タスク"})
-    assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
-    
-    
-@pytest.mark.asyncio
-async def test_delete_task(async_client):
-	response = await async_client.post("/tasks", json={"title": "テストタスク4"})
-	assert response.status_code == starlette.status.HTTP_200_OK
-	response_obj = response.json()
-	assert response_obj["title"] == "テストタスク4"
-	
-	# タスクの削除
-	response = await async_client.delete("/tasks/1")
-	assert response.status_code == starlette.status.HTTP_200_OK
-	
-	# 存在しないタスクの削除
-	response = await async_client.delete("/tasks/2")
-	assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
