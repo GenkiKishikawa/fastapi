@@ -88,3 +88,37 @@ async def test_done_flag(async_client):
 	# 既に完了フラグが外れているので400を返却
 	response = await async_client.delete("/tasks/1/done")
 	assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+async def test_update_task(async_client):
+    response = await async_client.post("/tasks", json={"title": "テストタスク3"})
+    assert response.status_code == starlette.status.HTTP_200_OK
+    response_obj = response.json()
+    assert response_obj["title"] == "テストタスク3"
+    
+    # タスクの更新
+    response = await async_client.put("/tasks/1", json={"title": "更新タスク"})
+    assert response.status_code == starlette.status.HTTP_200_OK
+    response_obj = response.json()
+    assert response_obj["title"] == "更新タスク"
+    
+    # 存在しないタスクの更新
+    response = await async_client.put("/tasks/2", json={"title": "更新タスク"})
+    assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
+    
+    
+@pytest.mark.asyncio
+async def test_delete_task(async_client):
+	response = await async_client.post("/tasks", json={"title": "テストタスク4"})
+	assert response.status_code == starlette.status.HTTP_200_OK
+	response_obj = response.json()
+	assert response_obj["title"] == "テストタスク4"
+	
+	# タスクの削除
+	response = await async_client.delete("/tasks/1")
+	assert response.status_code == starlette.status.HTTP_200_OK
+	
+	# 存在しないタスクの削除
+	response = await async_client.delete("/tasks/2")
+	assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
