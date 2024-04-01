@@ -1,8 +1,20 @@
+from typing import Annotated, Any
+
 from pydantic import (
-    PostgresDsn
+	AnyUrl,
+	BeforeValidator,
+	PostgresDsn
 )
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def parse_cors(value: Any) -> list[str] | str:
+	if isinstance(value, str) and not value.startswith("["):
+		return [i.strip() for i in value.split(",")]
+	elif isinstance(value, list | str):
+		return value
+	raise ValueError(value)
 
 
 class Settings(BaseSettings):
@@ -37,5 +49,11 @@ class Settings(BaseSettings):
 			port=self.POSTGRES_PORT,
 			path=self.POSTGRES_DB
 		)
+
+
+	BACKEND_CORS_ORIGINS: Annotated[
+		list[AnyUrl] | str, BeforeValidator(parse_cors)
+	] = []
+
 
 settings = Settings()
