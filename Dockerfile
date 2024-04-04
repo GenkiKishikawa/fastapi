@@ -7,6 +7,8 @@ WORKDIR /src
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	postgresql-client \
+	curl \
+	vim \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry
@@ -15,5 +17,3 @@ COPY pyproject.toml* poetry.lock* ./
 
 RUN poetry config virtualenvs.in-project true
 RUN if [ -f pyproject.toml ]; then poetry install --no-root; fi
-
-ENTRYPOINT [ "poetry", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--reload" ]
