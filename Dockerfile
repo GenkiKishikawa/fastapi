@@ -7,6 +7,8 @@ WORKDIR /src
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	postgresql-client \
+	curl \
+	vim \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry
