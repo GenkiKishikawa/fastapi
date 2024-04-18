@@ -2,6 +2,7 @@ image: python:3.11-buster
 
 stages:
   - test
+  - deploy
 
 services:
   - postgres:15
@@ -24,3 +25,28 @@ test:
   script:
     - echo "Running tests"
     - poetry run pytest
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploy"
+    - set -Ceux
+    - mkdir -p -m 700 ~/.ssh
+    - set +x
+    - echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - set -x
+    - cat << EOS > ~/.ssh/config
+      Host *
+          StrictHostKeyChecking no
+      EOS
+    - cat <<EOS | ssh kishikawa@192.168.11.17 bash
+      set -Ceux
+      cd /home/kishikawa/gitlab/kishikawa/fastapi/
+      git reset --hard
+      git fetch origin
+      git checkout "$CI_COMMIT_SHORT_SHA"
+      docker-compose stop
+      docker-compose up -d
+      EOS
+  only:
+    - main
