@@ -39,7 +39,7 @@ deploy:
       Host *
           StrictHostKeyChecking no
       EOS
-    - cat <<EOS | ssh kishikawa@192.168.11.17 bash
+    - ssh kishikawa@192.168.11.17 bash
       set -Ceux
       cd /home/kishikawa/gitlab/kishikawa/fastapi/
       git reset --hard
@@ -47,6 +47,5 @@ deploy:
       git checkout "$CI_COMMIT_SHORT_SHA"
       docker-compose stop
       docker-compose up -d
-      EOS
   only:
     - main
