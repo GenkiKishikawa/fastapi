@@ -1,5 +1,13 @@
 stages:
+  - prepare
   - test
+
+prepare:
+  stage: prepare
+  script:
+    - echo "Preparing environment"
+    - pip install poetry
+    - poetry install
 
 test:
   stage: test
