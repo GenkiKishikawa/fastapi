@@ -37,7 +37,7 @@ deploy:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - echo "Starting deployment to $DEPLOY_SERVER"
-    - ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && git reset --hard && git fetch origin && git checkout $CI_COMMIT_SHORT_SHA"
-    - ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && docker-compose down && docker-compose up -d"
+    - echo "kishikawa" | sudo -S 'ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && git reset --hard && git fetch origin && git checkout $CI_COMMIT_SHORT_SHA"'
+    - echo "kishikawa" | sudo -S 'ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && docker-compose down && docker-compose up -d"'
   only:
     - main
