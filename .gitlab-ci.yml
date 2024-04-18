@@ -28,6 +28,7 @@ test:
 deploy:
   stage: deploy
   script:
+    - chmod +x deploy.sh
     - ./deploy.sh
   only:
     - main
