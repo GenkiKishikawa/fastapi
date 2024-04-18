@@ -1,16 +1,13 @@
 image: python:3.11-buster
 
 stages:
-  - prepare
   - test
 
-prepare:
-  stage: prepare
-  script:
-    - echo "Preparing environment"
-    - pip install poetry
-    - poetry config virtualenvs.in-project true
-    - poetry install --no-root
+before_script:
+  - echo "Preparing environment"
+  - pip install poetry
+  - poetry config virtualenvs.in-project true
+  - poetry install --no-root
 
 test:
   stage: test
