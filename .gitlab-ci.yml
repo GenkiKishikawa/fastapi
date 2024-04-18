@@ -13,39 +13,31 @@ variables:
   POSTGRES_DB: demo
   POSTGRES_PORT: 5432
   POSTGRES_SERVER: db
-
-before_script:
-  - echo "Preparing environment"
-  - pip install poetry
-  - poetry config virtualenvs.in-project true
-  - poetry install --no-root
+  DEPLOY_SERVER: "kishikawa@192.168.11.17"
+  DEPLOY_PATH: "/home/kishikawa/gitlab/kishikawa/fastapi"
 
 test:
   stage: test
+  before_script:
+    - echo "Preparing environment"
+    - pip install poetry
+    - poetry config virtualenvs.in-project true
+    - poetry install --no-root
   script:
     - echo "Running tests"
     - poetry run pytest
 
 deploy:
   stage: deploy
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - echo "Deploy"
-    - set -Ceux
-    - mkdir -p -m 700 ~/.ssh
-    - set +x
-    - echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - set -x
-    - cat <<EOS > ~/.ssh/config
-      Host *
-          StrictHostKeyChecking no
-      EOS
-    - ssh kishikawa@192.168.11.17 bash
-      set -Ceux
-      cd /home/kishikawa/gitlab/kishikawa/fastapi/
-      git reset --hard
-      git fetch origin
-      git checkout "$CI_COMMIT_SHORT_SHA"
-      docker-compose stop
-      docker-compose up -d
+    - echo "Starting deployment to $DEPLOY_SERVER"
+    - ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && git reset --hard && git fetch origin && git checkout $CI_COMMIT_SHORT_SHA"
+    - ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && docker-compose down && docker-compose up -d"
   only:
     - main
