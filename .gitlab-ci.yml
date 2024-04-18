@@ -1,0 +1,26 @@
+image: python:3.11-buster
+
+stages:
+  - test
+
+services:
+  - postgres:15
+variables:
+  TZ: "Asia/Tokyo"
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: demo
+  POSTGRES_PORT: 5432
+  POSTGRES_SERVER: db
+
+before_script:
+  - echo "Preparing environment"
+  - pip install poetry
+  - poetry config virtualenvs.in-project true
+  - poetry install --no-root
+
+test:
+  stage: test
+  script:
+    - echo "Running tests"
+    - poetry run pytest
