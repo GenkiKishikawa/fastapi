@@ -13,8 +13,6 @@ variables:
   POSTGRES_DB: demo
   POSTGRES_PORT: 5432
   POSTGRES_SERVER: db
-  DEPLOY_SERVER: "kishikawa@192.168.11.17"
-  DEPLOY_PATH: "/home/kishikawa/gitlab/kishikawa/fastapi"
 
 test:
   stage: test
@@ -29,16 +27,7 @@ test:
 
 deploy:
   stage: deploy
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - apt-get install sshpass
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - echo "Starting deployment to $DEPLOY_SERVER"
-    - sshpass -p "kishikawa" ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && git reset --hard && git fetch origin && git checkout $CI_COMMIT_SHORT_SHA"
-    - sshpass -p "kishikawa" ssh $DEPLOY_SERVER "cd $DEPLOY_PATH && docker-compose down && docker-compose up -d"
+    - ./deploy.sh
   only:
     - main
