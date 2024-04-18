@@ -9,10 +9,11 @@ prepare:
   script:
     - echo "Preparing environment"
     - pip install poetry
-    - poetry install
+    - poetry config virtualenvs.in-project true
+    - poetry install --no-root
 
 test:
   stage: test
   script:
     - echo "Running tests"
-    - pytest
+    - poetry run pytest -s
