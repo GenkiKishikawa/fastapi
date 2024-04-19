@@ -2,7 +2,6 @@ image: python:3.11-buster
 
 stages:
   - test
-  - deploy
 
 services:
   - postgres:15
@@ -24,11 +23,3 @@ test:
   script:
     - echo "Running tests"
     - poetry run pytest
-
-deploy:
-  stage: deploy
-  script:
-    - chmod +x deploy.sh
-    - ./deploy.sh
-  only:
-    - main
