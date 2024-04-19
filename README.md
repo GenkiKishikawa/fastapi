@@ -19,4 +19,4 @@ FastAPIの学習用リポジトリ
 
 ## 学習メモ
 
-- [学習メモ](https://gitlab2.vic.co.jp/learning-tsukuba/fastapi/kishikawa/-/issues/2)
+- [学習メモ](https://github.com/GenkiKishikawa/fastapi/issues/1)
